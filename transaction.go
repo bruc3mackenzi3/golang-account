@@ -20,7 +20,7 @@ func NewDeposit(input map[string]string) *Deposit {
 
 	dep.id = input["id"]
 	dep.customer_id = input["customer_id"]
-	dep.load_amount, err = parseLoadAmound(input["load_amount"])
+	dep.load_amount, err = parseLoadAmount(input["load_amount"])
 	dep.time = input["time"]
 
 	if err != nil {
@@ -32,7 +32,10 @@ func NewDeposit(input map[string]string) *Deposit {
 
 // Parse the raw load amount string into a floating point number.  Returns an
 // error if parsing failed or the value is less than or equal to 0.0
-func parseLoadAmound(input string) (float64, error) {
+func parseLoadAmount(input string) (float64, error) {
+	if input[0] != '$' {
+		return 0.0, errors.New("load_amount missing leading '$'")
+	}
 	amount, err := strconv.ParseFloat(input[1:], 64)
 	if err != nil {
 		return 0.0, err
