@@ -6,10 +6,40 @@ $GOPATH/bin/golang-account
 
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"log"
+	"os"
+)
+
+func processDeposit(deposit *Deposit) {
+	account := GetAccount(deposit.id)
+	account.Deposit(deposit)
+	fmt.Println(account.balance)
+}
+
+func run() {
+	decoder := json.NewDecoder(os.Stdin)
+	var parsedJSON = make(map[string]string)
+	var deposit *Deposit
+
+	for {
+		err := decoder.Decode(&parsedJSON)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal("Failed to deserialize JSON: ", err)
+		}
+
+		deposit = NewDeposit(parsedJSON)
+		processDeposit(deposit)
+		break
+	}
+}
 
 func main() {
-	account := &Account{0.0}
-	account.Deposit(100.50)
-	fmt.Printf("Account balance is %f\n", account.balance)
+	run()
 }
