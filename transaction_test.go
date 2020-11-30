@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewDeposit(t *testing.T) {
 	input := map[string]string{
@@ -13,7 +15,7 @@ func TestNewDeposit(t *testing.T) {
 		id:          "11111",
 		customer_id: "222",
 		load_amount: 3318.47,
-		time:        "2000-01-01T00:00:00Z",
+		transTime:   ParseTime("2000-01-01T00:00:00Z"),
 	}
 	result := NewDeposit(input)
 	if *result != expected {
@@ -66,12 +68,13 @@ func TestParseLoadAmount(t *testing.T) {
 }
 
 func TestIsDepositProcessed(t *testing.T) {
-	dep := Deposit{
-		id:          "13579",
-		customer_id: "135",
-		load_amount: 1000.00,
-		time:        "2000-01-01T10:00:00Z",
+	dMap := map[string]string{
+		"id":          "13579",
+		"customer_id": "135",
+		"load_amount": "$1000.00",
+		"time":        "2000-01-01T10:00:00Z",
 	}
+	dep := NewDeposit(dMap)
 	result := dep.IsDepositProcessed()
 	if result != false {
 		t.Error("IsDepositProcessed returned true, expected false")

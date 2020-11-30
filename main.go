@@ -18,7 +18,7 @@ import (
 // status.
 func processDeposit(depositJSON map[string]string) map[string]interface{} {
 	deposit := NewDeposit(depositJSON)
-	account := GetAccount(deposit.id)
+	account := GetAccount(deposit.id, deposit.transTime)
 	result := account.DepositFunds(deposit)
 	return map[string]interface{}{
 		"id":          deposit.id,

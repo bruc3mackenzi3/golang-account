@@ -5,13 +5,14 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Deposit struct {
 	id          string
 	customer_id string
 	load_amount float64
-	time        string
+	transTime   time.Time
 }
 
 // Go implementation of a set data structure.  Stores a history of deposits to
@@ -21,17 +22,23 @@ var depositHistory = make(map[string]bool)
 // Create a new Deposit struct from a parsed JSON map.  Performs validation on
 // the input fields, logging and exiting on error.
 func NewDeposit(input map[string]string) *Deposit {
-	dep := Deposit{}
-	var err error
+	transTime, err := time.Parse(time.RFC3339, input["time"])
+	if err != nil {
+		log.Fatal("Failed to parse time", input["time"], "from input.  Time must be in RFC3339 format. Error:", err)
+		os.Exit(1)
+	}
 
-	dep.id = input["id"]
-	dep.customer_id = input["customer_id"]
-	dep.load_amount, err = parseLoadAmount(input["load_amount"])
-	dep.time = input["time"]
-
+	loadAmount, err := parseLoadAmount(input["load_amount"])
 	if err != nil {
 		log.Fatal("Failed to parse load_amount", input["load_amount"], "from input", input, "error:", err)
 		os.Exit(1)
+	}
+
+	dep := Deposit{
+		id:          input["id"],
+		customer_id: input["customer_id"],
+		load_amount: loadAmount,
+		transTime:   transTime,
 	}
 	return &dep
 }
