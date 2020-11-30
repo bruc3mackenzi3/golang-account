@@ -40,7 +40,7 @@ func (account *Account) DepositFunds(deposit *Deposit) bool {
 	}
 
 	// Add funds to account and commit transaction!
-	account.balance = account.balance + deposit.load_amount
+	account.balance = account.balance + deposit.loadAmount
 	deposit.RecordDeposit()
 	return true
 }

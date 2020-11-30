@@ -12,10 +12,10 @@ func TestNewDeposit(t *testing.T) {
 		"time":        "2000-01-01T00:00:00Z",
 	}
 	expected := Deposit{
-		id:          "11111",
-		customer_id: "222",
-		load_amount: 3318.47,
-		transTime:   ParseTime("2000-01-01T00:00:00Z"),
+		id:         "11111",
+		customerId: "222",
+		loadAmount: 3318.47,
+		transTime:  ParseTime("2000-01-01T00:00:00Z"),
 	}
 	result := NewDeposit(input)
 	if *result != expected {

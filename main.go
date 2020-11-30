@@ -22,7 +22,7 @@ func processDeposit(depositJSON map[string]string) map[string]interface{} {
 	result := account.DepositFunds(deposit)
 	return map[string]interface{}{
 		"id":          deposit.id,
-		"customer_id": deposit.customer_id,
+		"customer_id": deposit.customerId,
 		"accepted":    result,
 	}
 }

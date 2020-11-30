@@ -9,10 +9,10 @@ import (
 )
 
 type Deposit struct {
-	id          string
-	customer_id string
-	load_amount float64
-	transTime   time.Time
+	id         string
+	customerId string
+	loadAmount float64
+	transTime  time.Time
 }
 
 // Go implementation of a set data structure.  Stores a history of deposits to
@@ -35,10 +35,10 @@ func NewDeposit(input map[string]string) *Deposit {
 	}
 
 	dep := Deposit{
-		id:          input["id"],
-		customer_id: input["customer_id"],
-		load_amount: loadAmount,
-		transTime:   transTime,
+		id:         input["id"],
+		customerId: input["customer_id"],
+		loadAmount: loadAmount,
+		transTime:  transTime,
 	}
 	return &dep
 }
