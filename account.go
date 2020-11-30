@@ -18,6 +18,27 @@ func GetAccount(id string) *Account {
 }
 
 // Deposit funds into Account
-func (account *Account) Deposit(deposit *Deposit) {
+// Returns true if Deposit is accepted, false otherwise
+// NOTE: This function is NOT thread safe
+func (account *Account) DepositFunds(deposit *Deposit) bool {
+	if deposit.IsDepositProcessed() == true {
+		return false
+	}
+
+	// Reject deposit if limit on Account has been reached
+	if account.IsDepositLimitReached(deposit) == true {
+		return false
+	}
+
+	// Add funds to account and commit transaction!
 	account.balance = account.balance + deposit.load_amount
+	deposit.RecordDeposit()
+	return true
+}
+
+// Perform critical business logic checking if velocity limit on Account has
+// been reached.  Return true if one of the limits has been reached, false
+// otherwise.
+func (account *Account) IsDepositLimitReached(deposit *Deposit) bool {
+	return false
 }

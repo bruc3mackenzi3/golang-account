@@ -22,4 +22,11 @@ func TestProcessDeposit(t *testing.T) {
 	if reflect.DeepEqual(result, expected) != true {
 		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
 	}
+
+	// Test duplicate requests are blocked
+	expected["accepted"] = false
+	result = processDeposit(input)
+	if reflect.DeepEqual(result, expected) != true {
+		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
+	}
 }

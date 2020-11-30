@@ -21,3 +21,7 @@ func TestGetAccount(t *testing.T) {
 		}
 	}
 }
+
+func TestDeposit(*testing.T) {
+
+}

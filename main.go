@@ -19,13 +19,15 @@ import (
 func processDeposit(depositJSON map[string]string) map[string]interface{} {
 	deposit := NewDeposit(depositJSON)
 	account := GetAccount(deposit.id)
-	account.Deposit(deposit)
+	result := account.DepositFunds(deposit)
 	return map[string]interface{}{
 		"id":          deposit.id,
 		"customer_id": deposit.customer_id,
-		"accepted":    true,
+		"accepted":    result,
 	}
 }
+
+const DEBUG_LIMIT = 8
 
 // Main runner function.  Loops over input from stdin and prints corresponding
 // results to stdout.
@@ -33,6 +35,7 @@ func run() {
 	decoder := json.NewDecoder(os.Stdin)
 	var parsedJSON = make(map[string]string)
 
+	counter := 0
 	for {
 		err := decoder.Decode(&parsedJSON)
 		if err == io.EOF {
@@ -45,7 +48,12 @@ func run() {
 		result := processDeposit(parsedJSON)
 		output, _ := json.Marshal(result)
 		fmt.Println(string(output))
-		break
+
+		// Temporary debug logic
+		if counter >= DEBUG_LIMIT {
+			break
+		}
+		counter++
 	}
 }
 

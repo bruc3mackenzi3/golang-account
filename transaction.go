@@ -16,7 +16,7 @@ type Deposit struct {
 
 // Go implementation of a set data structure.  Stores a history of deposits to
 // ensure duplicates aren't processed.
-var deposit_history map[string]bool
+var depositHistory = make(map[string]bool)
 
 // Create a new Deposit struct from a parsed JSON map.  Performs validation on
 // the input fields, logging and exiting on error.
@@ -50,4 +50,16 @@ func parseLoadAmount(input string) (float64, error) {
 		return 0.0, errors.New("load_amount must be greater then 0.0")
 	}
 	return amount, nil
+}
+
+// Returns true if a deposit with the same ID has already been processed, false
+// otherwise.
+func (deposit *Deposit) IsDepositProcessed() bool {
+	_, exists := depositHistory[deposit.id]
+	return exists
+}
+
+// Stores a record of Deposit indicating it's been processed
+func (deposit *Deposit) RecordDeposit() {
+	depositHistory[deposit.id] = true
 }

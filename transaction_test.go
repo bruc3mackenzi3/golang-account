@@ -4,14 +4,14 @@ import "testing"
 
 func TestNewDeposit(t *testing.T) {
 	input := map[string]string{
-		"id":          "15887",
-		"customer_id": "528",
+		"id":          "11111",
+		"customer_id": "222",
 		"load_amount": "$3318.47",
 		"time":        "2000-01-01T00:00:00Z",
 	}
 	expected := Deposit{
-		id:          "15887",
-		customer_id: "528",
+		id:          "11111",
+		customer_id: "222",
 		load_amount: 3318.47,
 		time:        "2000-01-01T00:00:00Z",
 	}
@@ -63,4 +63,25 @@ func TestParseLoadAmount(t *testing.T) {
 			t.Errorf("No error on bad input %s", input)
 		}
 	}
+}
+
+func TestIsDepositProcessed(t *testing.T) {
+	dep := Deposit{
+		id:          "13579",
+		customer_id: "135",
+		load_amount: 1000.00,
+		time:        "2000-01-01T10:00:00Z",
+	}
+	result := dep.IsDepositProcessed()
+	if result != false {
+		t.Error("IsDepositProcessed returned true, expected false")
+	}
+
+	dep.RecordDeposit()
+	result = dep.IsDepositProcessed()
+	if result != true {
+		t.Error("IsDepositProcessed returned false, expected true")
+	}
+
+	// TODO: Add more tests to ensure robustness
 }
