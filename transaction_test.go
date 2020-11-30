@@ -80,7 +80,7 @@ func TestIsDepositProcessed(t *testing.T) {
 		t.Error("IsDepositProcessed returned true, expected false")
 	}
 
-	dep.RecordDeposit()
+	dep.Record()
 	result = dep.IsDepositProcessed()
 	if result != true {
 		t.Error("IsDepositProcessed returned false, expected true")

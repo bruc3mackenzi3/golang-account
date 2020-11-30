@@ -50,7 +50,7 @@ func run() {
 		fmt.Println(string(output))
 
 		// Temporary debug logic
-		if counter >= DEBUG_LIMIT {
+		if counter >= DEBUG_LIMIT && false {
 			break
 		}
 		counter++

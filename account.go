@@ -35,19 +35,13 @@ func (account *Account) DepositFunds(deposit *Deposit) bool {
 	}
 
 	// Reject deposit if limit on Account has been reached
-	if account.IsDepositLimitReached(deposit) == true {
+	if account.limits.IsDepositLimitReached(deposit) == true {
 		return false
 	}
 
 	// Add funds to account and commit transaction!
 	account.balance = account.balance + deposit.loadAmount
-	deposit.RecordDeposit()
+	account.limits.Update(deposit)
+	deposit.Record()
 	return true
-}
-
-// Perform critical business logic checking if velocity limit on Account has
-// been reached.  Return true if one of the limits has been reached, false
-// otherwise.
-func (account *Account) IsDepositLimitReached(deposit *Deposit) bool {
-	return false
 }

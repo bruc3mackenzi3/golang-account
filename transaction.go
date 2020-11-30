@@ -67,6 +67,6 @@ func (deposit *Deposit) IsDepositProcessed() bool {
 }
 
 // Stores a record of Deposit indicating it's been processed
-func (deposit *Deposit) RecordDeposit() {
+func (deposit *Deposit) Record() {
 	depositHistory[deposit.id] = true
 }
