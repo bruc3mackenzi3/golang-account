@@ -14,16 +14,24 @@ import (
 	"os"
 )
 
-func processDeposit(deposit *Deposit) {
+// Given parsed JSON input process transaction and return a map with accepted
+// status.
+func processDeposit(depositJSON map[string]string) map[string]interface{} {
+	deposit := NewDeposit(depositJSON)
 	account := GetAccount(deposit.id)
 	account.Deposit(deposit)
-	fmt.Println(account.balance)
+	return map[string]interface{}{
+		"id":          deposit.id,
+		"customer_id": deposit.customer_id,
+		"accepted":    true,
+	}
 }
 
+// Main runner function.  Loops over input from stdin and prints corresponding
+// results to stdout.
 func run() {
 	decoder := json.NewDecoder(os.Stdin)
 	var parsedJSON = make(map[string]string)
-	var deposit *Deposit
 
 	for {
 		err := decoder.Decode(&parsedJSON)
@@ -34,8 +42,9 @@ func run() {
 			log.Fatal("Failed to deserialize JSON: ", err)
 		}
 
-		deposit = NewDeposit(parsedJSON)
-		processDeposit(deposit)
+		result := processDeposit(parsedJSON)
+		output, _ := json.Marshal(result)
+		fmt.Println(string(output))
 		break
 	}
 }

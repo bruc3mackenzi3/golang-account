@@ -14,6 +14,12 @@ type Deposit struct {
 	time        string
 }
 
+// Go implementation of a set data structure.  Stores a history of deposits to
+// ensure duplicates aren't processed.
+var deposit_history map[string]bool
+
+// Create a new Deposit struct from a parsed JSON map.  Performs validation on
+// the input fields, logging and exiting on error.
 func NewDeposit(input map[string]string) *Deposit {
 	dep := Deposit{}
 	var err error
