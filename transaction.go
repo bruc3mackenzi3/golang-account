@@ -44,7 +44,7 @@ func NewDeposit(input map[string]string) *Deposit {
 }
 
 // Parse the raw load amount string into a floating point number.  Returns an
-// error if parsing failed or the value is less than or equal to 0.0
+// error if parsing failed or the value is less than or equal to 0.0.
 func parseLoadAmount(input string) (float64, error) {
 	if input[0] != '$' {
 		return 0.0, errors.New("load_amount missing leading '$'")
@@ -54,7 +54,7 @@ func parseLoadAmount(input string) (float64, error) {
 		return 0.0, err
 	}
 	if amount <= 0.0 {
-		return 0.0, errors.New("load_amount must be greater then 0.0")
+		return 0.0, errors.New("load_amount must be a positive number")
 	}
 	return amount, nil
 }
