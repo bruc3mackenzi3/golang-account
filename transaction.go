@@ -8,6 +8,7 @@ import (
 	"time"
 )
 
+// Deposit represents a deposit transaction attempting to be processed
 type Deposit struct {
 	id         string
 	customerId string
@@ -17,11 +18,14 @@ type Deposit struct {
 
 // Go implementation of a set data structure.  Stores a history of deposits to
 // ensure duplicates aren't processed.
+// Interface with depositHistory through IsDepositProcessed() and Record().
 var depositHistory = make(map[string]bool)
 
-// Create a new Deposit struct from a parsed JSON map.  Performs validation on
-// the input fields, logging and exiting on error.
+// Creates a new Deposit struct from a Map.  Performs validation on the input
+// fields, logging and exiting on error.
 func NewDeposit(input map[string]string) *Deposit {
+	// Datetime strings are expected in the format represented by time.RFC3339
+	// time formats: https://golang.org/pkg/time/#pkg-constants
 	transTime, err := time.Parse(time.RFC3339, input["time"])
 	if err != nil {
 		log.Fatal("Failed to parse time", input["time"], "from input.  Time must be in RFC3339 format. Error:", err)
@@ -67,6 +71,8 @@ func (deposit *Deposit) IsDepositProcessed() bool {
 }
 
 // Stores a record of Deposit indicating it's been processed
+// Precondition: All checks have passed and funds have been deposited into
+// account.
 func (deposit *Deposit) Record() {
 	depositHistory[deposit.id+deposit.customerId] = true
 }

@@ -8,7 +8,7 @@ func TestGetAccountLimits(t *testing.T) {
 	testTime := ParseTime(SAMPLE_TIME)
 	expected := AccountLimits{latestTime: testTime}
 
-	result := GetAccountLimits(testTime)
+	result := NewAccountLimits(testTime)
 	if expected != *result {
 		t.Errorf("AccountLimits returned does not match expected: %v $%v", result, expected)
 	}

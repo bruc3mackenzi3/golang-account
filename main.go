@@ -1,9 +1,3 @@
-/*
-Clone repo into go workspace set by GOPATH
-go install golang-account
-$GOPATH/bin/golang-account
-*/
-
 package main
 
 import (
@@ -16,23 +10,25 @@ import (
 
 // Given parsed JSON input process transaction and return a map with accepted
 // status.
-func processDeposit(depositJSON map[string]string) map[string]interface{} {
+func processInput(depositJSON map[string]string) map[string]interface{} /* string */ {
+	// NOTE: For debugging purposes code to return a string with map fields in a
+	// particular order is left commented out.  This makes comparison with sample
+	// output.txt seamless.
+
 	deposit := NewDeposit(depositJSON)
 	account := GetAccount(deposit.customerId, deposit.transTime)
 	result := account.DepositFunds(deposit)
-
-	// account = GetAccount(deposit.customerId, deposit.transTime)
-	// fmt.Printf("After %+v %+v\n", *account, account.limits)
 
 	return map[string]interface{}{
 		"id":          deposit.id,
 		"customer_id": deposit.customerId,
 		"accepted":    result,
 	}
+	// return fmt.Sprintf(`{"id":"%s","customer_id":"%s","accepted":%t}`, deposit.id, deposit.customerId, result)
 }
 
-// Main runner function.  Loops over input from stdin and prints corresponding
-// results to stdout.
+// Main runner function.  Loops over input from stdin, decodes JSON and handles
+// errors, and prints results to stdout.
 func run() {
 	decoder := json.NewDecoder(os.Stdin)
 	var parsedJSON = make(map[string]string)
@@ -46,9 +42,8 @@ func run() {
 			log.Fatal("Failed to deserialize JSON: ", err)
 		}
 
-		result := processDeposit(parsedJSON)
-		output, _ := json.Marshal(result)
-		fmt.Println(string(output))
+		result := processInput(parsedJSON)
+		fmt.Println(result)
 	}
 }
 

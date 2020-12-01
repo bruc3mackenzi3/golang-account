@@ -18,7 +18,7 @@ func TestProcessDeposit(t *testing.T) {
 		"customer_id": "528",
 		"accepted":    true,
 	}
-	result := processDeposit(input)
+	result := processInput(input)
 	if reflect.DeepEqual(result, expected) != true {
 		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
 	}
@@ -35,14 +35,14 @@ func TestProcessDeposit(t *testing.T) {
 		"customer_id": "528",
 		"accepted":    false,
 	}
-	result = processDeposit(input)
+	result = processInput(input)
 	if reflect.DeepEqual(result, expected) != true {
 		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
 	}
 
 	// Test duplicate requests are blocked
 	expected["accepted"] = false
-	result = processDeposit(input)
+	result = processInput(input)
 	if reflect.DeepEqual(result, expected) != true {
 		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
 	}

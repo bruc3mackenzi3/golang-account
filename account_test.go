@@ -14,7 +14,7 @@ func TestGetAccount(t *testing.T) {
 
 	expectedAccount := Account{
 		balance: 0.0,
-		limits:  *GetAccountLimits(ParseTime(rawTime)),
+		limits:  *NewAccountLimits(ParseTime(rawTime)),
 	}
 	tests := []testGetAmountData{
 		testGetAmountData{input: "123", expected: expectedAccount},

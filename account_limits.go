@@ -4,12 +4,13 @@ import (
 	"time"
 )
 
-// time formats: https://golang.org/pkg/time/#pkg-constants
-
+// Constants representing transaction limits
 const DAILY_DEPOSIT_COUNT_LIMIT = 3
 const DAILY_DEPOSIT_AMOUNT_LIMIT = 5000.0
 const WEEKLY_DEPOSIT_AMOUNT_LIMIT = 20000.0
 
+// AccountLimits stores various running counts associated with funds loaded to
+// an account.  Instantiate via GetAccountLimits().
 type AccountLimits struct {
 	latestTime   time.Time
 	dailyCount   int
@@ -17,7 +18,8 @@ type AccountLimits struct {
 	weeklyAmount float64
 }
 
-func GetAccountLimits(transTime time.Time) *AccountLimits {
+// Create a new AccountLimits struct
+func NewAccountLimits(transTime time.Time) *AccountLimits {
 	return &AccountLimits{
 		latestTime:   transTime,
 		dailyCount:   0,
@@ -26,8 +28,8 @@ func GetAccountLimits(transTime time.Time) *AccountLimits {
 	}
 }
 
-// Perform critical business logic checking if velocity limit on Account will
-// be reached with Deposit.  Return true if one of the limits has been reached,
+// Perform critical business logic checking if account's velocity limit will
+// be reached with deposit.  Return true if one of the limits has been reached,
 // false otherwise.
 func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 	// NOTE: Check daily limit against both load amount alone and in
@@ -51,8 +53,8 @@ func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 	return false
 }
 
-// Update account limit counts when a deposit is processed.  Assumes
-// IsDepositLimitReached() was called and returned false.
+// Update account limit counts when a deposit is processed.
+// Precondition: IsDepositLimitReached() was called and returned false.
 func (limit *AccountLimits) Update(deposit *Deposit) {
 	if limit.hasSameDay(deposit) {
 		// If day is the same update daily transaction count and daily deposit

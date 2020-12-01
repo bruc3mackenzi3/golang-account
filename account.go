@@ -2,11 +2,14 @@ package main
 
 import "time"
 
+// Represents a prepaid credit card account.  limits stores metrics to
+// calculate restrictions associated with loading money to the card.
 type Account struct {
 	balance float64
 	limits  AccountLimits
 }
 
+// A map of account IDs to all Accounts.  Accessed via GetAccount().
 var accounts = make(map[string]*Account)
 
 // Retrieve the Account associated with id, or return a newly created one if it
@@ -19,7 +22,7 @@ func GetAccount(id string, transTime time.Time) *Account {
 	if found == false {
 		accounts[id] = &Account{
 			balance: 0.0,
-			limits:  *GetAccountLimits(transTime),
+			limits:  *NewAccountLimits(transTime),
 		}
 	}
 	account, _ := accounts[id]
