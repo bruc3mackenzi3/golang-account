@@ -9,7 +9,7 @@ Install with command:
 go install golang-account
 ```
 
-Run with command:
+Various run commands:
 ```
 # Output to stdout
 $GOPATH/bin/golang-account < data/input.txt
@@ -31,7 +31,7 @@ Check test coverage:
 go test -coverprofile cp.out
 ```
 
-The program is developed and tested with Go 1.13.  It makes use of the standard library only; no 3rd party package installs are required.
+The program is developed and tested with Go 1.13 on Windows 10.  It makes use of the standard library only; no 3rd party package installs are required.
 
 ## Solution
 This section details notable points about the solution.
