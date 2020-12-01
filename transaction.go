@@ -62,11 +62,11 @@ func parseLoadAmount(input string) (float64, error) {
 // Returns true if a deposit with the same ID has already been processed, false
 // otherwise.
 func (deposit *Deposit) IsDepositProcessed() bool {
-	_, exists := depositHistory[deposit.id]
+	_, exists := depositHistory[deposit.id+deposit.customerId]
 	return exists
 }
 
 // Stores a record of Deposit indicating it's been processed
 func (deposit *Deposit) Record() {
-	depositHistory[deposit.id] = true
+	depositHistory[deposit.id+deposit.customerId] = true
 }
