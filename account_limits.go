@@ -34,6 +34,9 @@ func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 		if limit.dailyCount >= DAILY_DEPOSIT_COUNT_LIMIT {
 			return true
 		}
+		if limit.dailyAmount+deposit.loadAmount > DAILY_DEPOSIT_AMOUNT_LIMIT {
+			return true
+		}
 	}
 	return false
 }
@@ -41,18 +44,27 @@ func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 // Update account limit counts when a deposit is processed.  Assumes
 // IsDepositLimitReached() was called and returned false.
 func (limit *AccountLimits) Update(deposit *Deposit) {
-
 	if limit.hasSameDay(deposit) {
-		// If day is the same update daily transaction count and amount
-		// deposited
+		// If day is the same update daily transaction count and daily deposit
+		// amount
 		limit.dailyCount++
-		limit.dailyAmount += deposit.loadAmount
+		limit.dailyAmount = limit.dailyAmount + deposit.loadAmount
 	} else {
-		// If day is different update the day and reset counts
-		limit.dailyCount = 0
-		limit.dailyAmount = 0.0
-		limit.latestTime = deposit.transTime
+		// If day is different reset counts
+		limit.dailyCount = 1
+		limit.dailyAmount = deposit.loadAmount
 	}
+
+	// NOTE: dailyCount was updated above
+	if limit.hasSameWeek(deposit) {
+		// If week is the same update weekly deposit amount
+		limit.weeklyAmount = limit.weeklyAmount + deposit.loadAmount
+	} else {
+		limit.weeklyAmount = deposit.loadAmount
+	}
+
+	// Finally update the latest transaction time
+	limit.latestTime = deposit.transTime
 }
 
 // Helper function to determine if previous and current deposits fall on the
@@ -61,6 +73,22 @@ func (limit *AccountLimits) hasSameDay(deposit *Deposit) bool {
 	prev := limit.latestTime
 	curr := deposit.transTime
 	if prev.Year() == curr.Year() && prev.YearDay() == curr.YearDay() {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Helper function to determine if previous and current deposits fall in the
+// same week
+// NOTE: assumes transactions are always processed in ascending order
+func (limit *AccountLimits) hasSameWeek(deposit *Deposit) bool {
+	prev := limit.latestTime
+	curr := deposit.transTime
+
+	prevYear, prevWeek := prev.ISOWeek()
+	currYear, currWeek := curr.ISOWeek()
+	if prevYear == currYear && prevWeek == currWeek {
 		return true
 	} else {
 		return false

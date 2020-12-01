@@ -27,15 +27,12 @@ func processDeposit(depositJSON map[string]string) map[string]interface{} {
 	}
 }
 
-const DEBUG_LIMIT = 8
-
 // Main runner function.  Loops over input from stdin and prints corresponding
 // results to stdout.
 func run() {
 	decoder := json.NewDecoder(os.Stdin)
 	var parsedJSON = make(map[string]string)
 
-	counter := 0
 	for {
 		err := decoder.Decode(&parsedJSON)
 		if err == io.EOF {
@@ -48,12 +45,6 @@ func run() {
 		result := processDeposit(parsedJSON)
 		output, _ := json.Marshal(result)
 		fmt.Println(string(output))
-
-		// Temporary debug logic
-		if counter >= DEBUG_LIMIT && false {
-			break
-		}
-		counter++
 	}
 }
 
