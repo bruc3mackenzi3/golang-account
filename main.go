@@ -43,7 +43,9 @@ func run() {
 		}
 
 		result := processInput(parsedJSON)
-		fmt.Println(result)
+		output, _ := json.Marshal(result)
+		fmt.Println(string(output))
+		// fmt.Println(result)
 	}
 }
 

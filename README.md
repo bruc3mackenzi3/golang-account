@@ -11,7 +11,14 @@ go install golang-account
 
 Run with command:
 ```
-$GOPATH/bin/golang-account < data/input.txt [> data/results.txt]
+# Output to stdout
+$GOPATH/bin/golang-account < data/input.txt
+
+# Output to file
+$GOPATH/bin/golang-account < data/input.txt > data/results.txt
+
+# Run only for customer_id 528:
+grep '"customer_id":"528"' data/input.txt | $GOPATH/bin/golang-account
 ```
 
 Run unit tests (from project root folder):
