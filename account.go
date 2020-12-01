@@ -7,7 +7,7 @@ type Account struct {
 	limits  AccountLimits
 }
 
-var accounts = make(map[string]Account)
+var accounts = make(map[string]*Account)
 
 // Retrieve the Account associated with id, or return a newly created one if it
 // doesn't exist.
@@ -17,13 +17,13 @@ var accounts = make(map[string]Account)
 func GetAccount(id string, transTime time.Time) *Account {
 	_, found := accounts[id]
 	if found == false {
-		accounts[id] = Account{
+		accounts[id] = &Account{
 			balance: 0.0,
 			limits:  *GetAccountLimits(transTime),
 		}
 	}
 	account, _ := accounts[id]
-	return &account
+	return account
 }
 
 // Deposit funds into Account

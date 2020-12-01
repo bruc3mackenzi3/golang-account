@@ -24,14 +24,39 @@ func TestGetAccount(t *testing.T) {
 
 	for _, testData := range tests {
 		result := GetAccount(testData.input, ParseTime(rawTime))
-		if testData.expected != *result {
-			t.Errorf("Expected Account struct does not match actual: %v, %v", testData.expected, result)
+		if testData.expected.balance != result.balance {
+			t.Errorf("Expected Account struct does not match actual: %+v, %+v", &testData.expected.balance, result.balance)
+		} else if testData.expected.limits != result.limits {
+			t.Errorf("Expected Account limits does not match actual")
 		}
 	}
 
 	// TODO: Test after balance is changed
 }
 
-func TestDeposit(*testing.T) {
+func TestDepositFunds(t *testing.T) {
+	id := "709"
+	testTime := ParseTime("2020-01-01T00:00:00Z")
 
+	acc := GetAccount(id, testTime)
+
+	dep := GetSampleDeposit()
+	dep.transTime = testTime
+	dep.loadAmount = 3000.0
+
+	// First deposit
+	if acc.DepositFunds(&dep) != true {
+		t.Errorf("Deposit failed")
+	}
+
+	// Fail on duplicate id
+	if acc.DepositFunds(&dep) != false {
+		t.Errorf("Deposit did NOT fail")
+	}
+
+	// Fail on daily amount limit
+	dep.id = "98765"
+	if acc.DepositFunds(&dep) != false {
+		t.Errorf("Deposit did NOT fail")
+	}
 }

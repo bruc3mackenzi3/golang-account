@@ -114,17 +114,17 @@ func TestIsDepositLimitReached(t *testing.T) {
 
 	// 3. Weekly transaction amount limit
 	limits.dailyAmount = 0.0
-	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT - 1.0
+	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT - deposit.loadAmount - 1.0
 	if limits.IsDepositLimitReached(&deposit) != false {
 		t.Error("False positive with account and deposit below limits")
 	}
 
-	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT
-	if limits.IsDepositLimitReached(&deposit) != true {
-		t.Error("False negative with account and deposit below limits")
+	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT - deposit.loadAmount
+	if limits.IsDepositLimitReached(&deposit) != false {
+		t.Error("False positive with account and deposit below limits")
 	}
 
-	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT + 1.0
+	limits.weeklyAmount = WEEKLY_DEPOSIT_AMOUNT_LIMIT - deposit.loadAmount + 1.0
 	if limits.IsDepositLimitReached(&deposit) != true {
 		t.Error("False negative with account and deposit below limits")
 	}

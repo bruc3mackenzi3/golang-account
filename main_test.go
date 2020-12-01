@@ -23,6 +23,23 @@ func TestProcessDeposit(t *testing.T) {
 		t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
 	}
 
+	// Test second transaction
+	// input = map[string]string{
+	// 	"id":          "11429",
+	// 	"customer_id": "528",
+	// 	"load_amount": "$2253.56",
+	// 	"time":        "2000-01-01T11:15:02Z",
+	// }
+	// expected = map[string]interface{}{
+	// 	"id":          "11429",
+	// 	"customer_id": "528",
+	// 	"accepted":    false,
+	// }
+	// result = processDeposit(input)
+	// if reflect.DeepEqual(result, expected) != true {
+	// 	t.Errorf("Expected response map does not match actual: %v, %v", expected, result)
+	// }
+
 	// Test duplicate requests are blocked
 	expected["accepted"] = false
 	result = processDeposit(input)

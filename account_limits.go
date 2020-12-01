@@ -37,6 +37,9 @@ func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 		if limit.dailyAmount+deposit.loadAmount > DAILY_DEPOSIT_AMOUNT_LIMIT {
 			return true
 		}
+		if limit.weeklyAmount+deposit.loadAmount > WEEKLY_DEPOSIT_AMOUNT_LIMIT {
+			return true
+		}
 	}
 	return false
 }
