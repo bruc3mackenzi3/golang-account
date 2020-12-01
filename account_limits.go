@@ -30,6 +30,11 @@ func GetAccountLimits(transTime time.Time) *AccountLimits {
 // be reached with Deposit.  Return true if one of the limits has been reached,
 // false otherwise.
 func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
+	// NOTE: Check daily limit against both load amount alone and in
+	// combination with daily amount
+	if deposit.loadAmount > DAILY_DEPOSIT_AMOUNT_LIMIT {
+		return true
+	}
 	if limit.hasSameDay(deposit) {
 		if limit.dailyCount >= DAILY_DEPOSIT_COUNT_LIMIT {
 			return true
@@ -37,6 +42,8 @@ func (limit *AccountLimits) IsDepositLimitReached(deposit *Deposit) bool {
 		if limit.dailyAmount+deposit.loadAmount > DAILY_DEPOSIT_AMOUNT_LIMIT {
 			return true
 		}
+	}
+	if limit.hasSameWeek(deposit) {
 		if limit.weeklyAmount+deposit.loadAmount > WEEKLY_DEPOSIT_AMOUNT_LIMIT {
 			return true
 		}
