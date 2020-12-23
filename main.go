@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,43 +11,57 @@ import (
 
 // Given parsed JSON input process transaction and return a map with accepted
 // status.
-func processInput(depositJSON map[string]string) map[string]interface{} /* string */ {
-	// NOTE: For debugging purposes code to return a string with map fields in a
-	// particular order is left commented out.  This makes comparison with sample
-	// output.txt seamless.
+func processInput(input []byte) []byte {
+	var depositJSON = make(map[string]string)
+	err := json.Unmarshal(input, &depositJSON)
+	if err != nil {
+		return []byte("Error: input is not valid JSON")
+	}
 
 	deposit := NewDeposit(depositJSON)
 	account := GetAccount(deposit.customerId, deposit.transTime)
 	result := account.DepositFunds(deposit)
 
-	return map[string]interface{}{
+	output, err := json.Marshal(map[string]interface{}{
 		"id":          deposit.id,
 		"customer_id": deposit.customerId,
 		"accepted":    result,
-	}
-	// return fmt.Sprintf(`{"id":"%s","customer_id":"%s","accepted":%t}`, deposit.id, deposit.customerId, result)
+	})
+	return output
 }
 
 // Main runner function.  Loops over input from stdin, decodes JSON and handles
 // errors, and prints results to stdout.
 func run() {
-	decoder := json.NewDecoder(os.Stdin)
-	var parsedJSON = make(map[string]string)
-
+	reader := bufio.NewReader(os.Stdin)
 	for {
-		err := decoder.Decode(&parsedJSON)
+		line, _, err := reader.ReadLine()
 		if err == io.EOF {
 			break
 		}
 		if err != nil {
 			log.Fatal("Failed to deserialize JSON: ", err)
 		}
-
-		result := processInput(parsedJSON)
-		output, _ := json.Marshal(result)
-		fmt.Println(string(output))
-		// fmt.Println(result)
+		result := processInput(line)
+		fmt.Println(string(result))
 	}
+
+	// decoder := json.NewDecoder(os.Stdin)
+	// var parsedJSON = make(map[string]string)
+
+	// for {
+	// 	err := decoder.Decode(&parsedJSON)
+	// 	if err == io.EOF {
+	// 		break
+	// 	}
+	// 	if err != nil {
+	// 		log.Fatal("Failed to deserialize JSON: ", err)
+	// 	}
+
+	// 	result := processInput(parsedJSON)
+	// 	output, _ := json.Marshal(result)
+	// 	fmt.Println(string(output))
+	// }
 }
 
 func main() {
