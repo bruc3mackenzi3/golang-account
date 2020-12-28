@@ -8,17 +8,19 @@ import (
 	"os"
 )
 
-const MAX_WORKERS = 100
+const MAX_MESSAGES = 10000
 
-// Given parsed JSON input process transaction and return a map with accepted
-// status.
-func processInput(input chan []byte, output chan []byte) {
+// Receives transactions from input channel, processes them and sends to output
+// channel.  Runs until input channel is closes loses output channel when all
+// NOTE: Specify channel direction to increase type-safety
+func processInput(input <-chan []byte, output chan<- []byte) {
 	var depositJSON = make(map[string]string)
+
 	for transaction := range input {
 		err := json.Unmarshal(transaction, &depositJSON)
 		if err != nil {
 			println("Error: input is not valid JSON: ", string(transaction))
-			continue
+			continue // discard transaction if malformed
 		}
 
 		deposit := NewDeposit(depositJSON)
@@ -35,7 +37,11 @@ func processInput(input chan []byte, output chan []byte) {
 	close(output)
 }
 
-func read_input(input chan []byte, output chan []byte) {
+// Reads lines from stdin and sends to input channel.  Closes the channel when
+// EOF or an error is encountered.
+func readInput(input chan<- []byte) {
+	// NOTE: Passing slices through channels is potentially unsafe because
+	// slices are pointers to arrays, meaning the passed data can be overwritten.
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		line, err := reader.ReadBytes('\n')
@@ -43,42 +49,27 @@ func read_input(input chan []byte, output chan []byte) {
 			break
 		}
 		if err != nil {
-			println("Failed to deserialize JSON: ", err)
-			continue
+			println("Error reading from stdin:", err)
+			break
 		}
 		input <- line
 	}
 	close(input)
 }
 
-// Main runner function.  Loops over input from stdin, decodes JSON and handles
-// errors, and prints results to stdout.
+// Main runner function.  Runs goroutines to read input and process input, and
+// prints results to stdout.
 func run() {
-	var input = make(chan []byte, MAX_WORKERS)
-	var output = make(chan []byte, MAX_WORKERS)
+	// Large buffered channels to avoid blocking
+	var input = make(chan []byte, MAX_MESSAGES)
+	var output = make(chan []byte, MAX_MESSAGES)
 
-	go read_input(input, output)
+	go readInput(input)
 	go processInput(input, output)
+	// range loops over received items in channel until it's closed
 	for result := range output {
 		fmt.Println(string(result))
 	}
-
-	// decoder := json.NewDecoder(os.Stdin)
-	// var parsedJSON = make(map[string]string)
-
-	// for {
-	// 	err := decoder.Decode(&parsedJSON)
-	// 	if err == io.EOF {
-	// 		break
-	// 	}
-	// 	if err != nil {
-	// 		log.Fatal("Failed to deserialize JSON: ", err)
-	// 	}
-
-	// 	result := processInput(parsedJSON)
-	// 	output, _ := json.Marshal(result)
-	// 	fmt.Println(string(output))
-	// }
 }
 
 func main() {
